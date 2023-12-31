@@ -1,0 +1,10 @@
+type;coord_x;coord_y
+"level";1280;480
+"player";100;376
+"platform";0;456
+"platform";300;432
+"platform";240;456
+"platform";480;456
+"platform";720;456
+"platform";960;456
+"platform";1200;456
