@@ -9,11 +9,13 @@ pygame.init()
 
 width, height = 640, 480
 screen = pygame.display.set_mode((width, height))
-FPS = 50
+FPS = 60
 clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
 platform_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
+STOP, LEFT, RIGHT, JUMP = 0, 1, 2, 3
+player_motion = STOP
 
 
 def terminate():
@@ -130,15 +132,17 @@ class Camera:
         self.event = None
 
     def apply(self, obj):
-        if player.x0 <= 100 and self.event:
-            player.update(self.event, level_x, level_y)
-        else:
-            obj.rect.x -= self.dx
+        obj.rect.x -= self.dx
 
     def update(self, *args):
         if args:
             self.event = args[0]
-            self.dx = -1 if self.event.key == pygame.K_LEFT else 1
+            if player_motion == RIGHT:
+                self.dx = 2
+            elif player_motion == LEFT:
+                self.dx = -2
+            elif player_motion == STOP:
+                self.dx = 0
             player.twist(event)
 
 
@@ -153,14 +157,25 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    player_motion = LEFT
                     camera.update(event)
-                    for sprite in platform_group:
-                        camera.apply(sprite)
+                elif event.key == pygame.K_RIGHT:
+                    player_motion = RIGHT
+                    camera.update(event)
+                elif event.key == pygame.K_UP:
+                    player_motion = JUMP
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    player_motion = STOP
+                    camera.update(event)
         screen.fill('black')
         all_sprites.draw(screen)
         player_group.draw(screen)
         all_sprites.update()
+        for sprite in platform_group:
+            camera.apply(sprite)
         pygame.display.flip()
+        clock.tick(FPS)
     pygame.quit()
