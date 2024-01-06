@@ -74,7 +74,7 @@ def generate_level(filename):
     return new_player, max_width, max_height
 
 
-platform_image = {'platform': load_image('platform_py (1).png')}
+platform_image = {'platform': load_image('platform_py.png')}
 player_image = pygame.transform.scale(load_image('hero.png'), (80, 80))
 
 
