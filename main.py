@@ -21,6 +21,8 @@ bullet_group = pygame.sprite.Group()
 STOP, LEFT, RIGHT, JUMP = 0, 1, 2, 3
 player_motion = STOP
 bullet_flip = False
+level_number = 1
+level_chosen = False
 
 
 def terminate():
@@ -61,6 +63,7 @@ def start_screen():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if start_game_button.x <= event.pos[0] <= start_game_button.x + start_game_button.width and\
                         start_game_button.y <= event.pos[1] <= start_game_button.y + start_game_button.height:
+                    change_level_screen()
                     return
                 elif exit_button.x <= event.pos[0] <= exit_button.x + exit_button.width and\
                         exit_button.y <= event.pos[1] <= exit_button.y + exit_button.height:
@@ -69,8 +72,105 @@ def start_screen():
         clock.tick(FPS)
 
 
-def finish_screen():
-    title_text = 'Поражение'
+def change_level_screen():
+    global level_number, level_chosen
+    title_text = 'Уровни'
+    screen.fill('DarkSeaGreen')
+    font_title = pygame.font.Font('data/SAIBA-45.otf', 35)
+    string_rendered = font_title.render(title_text, 1, pygame.Color('black'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 30
+    intro_rect.x = 250
+    screen.blit(string_rendered, intro_rect)
+    first_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(40, 150, 180, 80), 3, 10)
+    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(43, 153, 174, 74), 0, 10)
+    second_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(240, 150, 180, 80), 3, 10)
+    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(243, 153, 174, 74), 0, 10)
+    third_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(440, 150, 180, 80), 3, 10)
+    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(443, 153, 174, 74), 0, 10)
+    fourth_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(40, 300, 180, 80), 3, 10)
+    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(43, 303, 174, 74), 0, 10)
+    fifth_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(240, 300, 180, 80), 3, 10)
+    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(243, 303, 174, 74), 0, 10)
+    sixth_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(440, 300, 180, 80), 3, 10)
+    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(443, 303, 174, 74), 0, 10)
+    font_level = pygame.font.Font(None, 30)
+    string_rendered = font_level.render('Первый', 1, pygame.Color('black'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 180
+    intro_rect.x = 90
+    screen.blit(string_rendered, intro_rect)
+    string_rendered = font_level.render('Второй', 1, pygame.Color('black'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 180
+    intro_rect.x = 295
+    screen.blit(string_rendered, intro_rect)
+    string_rendered = font_level.render('Третий', 1, pygame.Color('black'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 180
+    intro_rect.x = 495
+    screen.blit(string_rendered, intro_rect)
+    string_rendered = font_level.render('Четвёртый', 1, pygame.Color('black'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 330
+    intro_rect.x = 75
+    screen.blit(string_rendered, intro_rect)
+    string_rendered = font_level.render('Пятый', 1, pygame.Color('black'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 330
+    intro_rect.x = 299
+    screen.blit(string_rendered, intro_rect)
+    string_rendered = font_level.render('Шестой', 1, pygame.Color('black'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 330
+    intro_rect.x = 490
+    screen.blit(string_rendered, intro_rect)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if first_level_button.x <= event.pos[0] <= first_level_button.x + first_level_button.width and\
+                        first_level_button.y <= event.pos[1] <= first_level_button.y + first_level_button.height:
+                    level_number = 1
+                    level_chosen = True
+                    return
+                elif second_level_button.x <= event.pos[0] <= second_level_button.x + second_level_button.width and\
+                        second_level_button.y <= event.pos[1] <= second_level_button.y + second_level_button.height:
+                    level_number = 2
+                    level_chosen = True
+                    return
+                elif third_level_button.x <= event.pos[0] <= third_level_button.x + third_level_button.width and\
+                        third_level_button.y <= event.pos[1] <= third_level_button.y + third_level_button.height:
+                    level_number = 3
+                    level_chosen = True
+                    return
+                elif fourth_level_button.x <= event.pos[0] <= fourth_level_button.x + fourth_level_button.width and\
+                        fourth_level_button.y <= event.pos[1] <= fourth_level_button.y + fourth_level_button.height:
+                    level_number = 4
+                    level_chosen = True
+                    return
+                elif fifth_level_button.x <= event.pos[0] <= fifth_level_button.x + fifth_level_button.width and\
+                        fifth_level_button.y <= event.pos[1] <= fifth_level_button.y + fifth_level_button.height:
+                    level_number = 5
+                    level_chosen = True
+                    return
+                elif sixth_level_button.x <= event.pos[0] <= sixth_level_button.x + sixth_level_button.width and\
+                        sixth_level_button.y <= event.pos[1] <= sixth_level_button.y + sixth_level_button.height:
+                    level_number = 6
+                    level_chosen = True
+                    return
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def finish_screen(win=False):
+    global level_number
+    title_text = 'Поражение' if not win else 'Победа'
+    button_text = 'Играть заново' if not win else 'След уровень'
     screen.fill('DarkSeaGreen')
     font_title = pygame.font.Font('data/SAIBA-45.otf', 35)
     string_rendered = font_title.render(title_text, 1, pygame.Color('black'))
@@ -85,7 +185,7 @@ def finish_screen():
     exit_button = pygame.draw.rect(screen, 'white', pygame.Rect(210, 390, 200, 80), 3, 10)
     pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(213, 393, 194, 74), 0, 10)
     font_start_game = pygame.font.Font(None, 35)
-    string_rendered = font_start_game.render('Играть заново', 1, 'black')
+    string_rendered = font_start_game.render(button_text, 1, 'black')
     intro_rect = string_rendered.get_rect()
     intro_rect.top = 200
     intro_rect.x = 225
@@ -113,7 +213,13 @@ def finish_screen():
                     terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if return_game_button.x <= event.pos[0] <= return_game_button.x + return_game_button.width and \
-                        return_game_button.y <= event.pos[1] <= return_game_button.y + return_game_button.height:
+                        return_game_button.y <= event.pos[1] <= return_game_button.y + return_game_button.height and \
+                        win:
+                    level_number += 1
+                    return
+                elif return_game_button.x <= event.pos[0] <= return_game_button.x + return_game_button.width and \
+                        return_game_button.y <= event.pos[1] <= return_game_button.y + return_game_button.height and \
+                        not win:
                     return
                 elif exit_button.x <= event.pos[0] <= exit_button.x + exit_button.width and \
                         exit_button.y <= event.pos[1] <= exit_button.y + exit_button.height:
@@ -158,6 +264,8 @@ def generate_level(filename):
 
 
 platform_image = {'platform': load_image('platform_level_1_2_6.png')}
+levels = {1: 'level.csv', 2: 'level_2.csv', 3: 'level_3.csv',
+          4: 'level_4.csv', 5: 'level_5.csv', 6: 'level_6.csv'}
 player_image = load_image('hero.png')
 sneech_image = pygame.transform.scale(load_image('Sneech.png'), (86.4, 45.6))
 flag_image = load_image('finish_flag.png')
@@ -335,8 +443,6 @@ class Camera:
             player.twist(self.event)
 
 
-player, flag, level_x, level_y = generate_level('level.csv')
-
 if __name__ == '__main__':
     running = True
     start_screen()
@@ -345,6 +451,7 @@ if __name__ == '__main__':
     jump = False
     jump_count = 0
     jump_max = 18
+    player, flag, level_x, level_y = generate_level(levels[level_number]) if level_chosen else [None, None, None, None]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -381,26 +488,33 @@ if __name__ == '__main__':
             elif pygame.sprite.spritecollideany(player, platform_group):
                 jump = False
                 player.y = pygame.sprite.spritecollide(player, platform_group, False)[0].rect.y - player.rect.width
-        if player.die:
-            finish_screen()
-            player_motion = STOP
-            camera.dx = 0
-            player, flag, level_x, level_y = generate_level('level.csv')
+        if player:
+            if player.die:
+                finish_screen()
+                player_motion = STOP
+                camera.dx = 0
+                player, flag, level_x, level_y = generate_level(levels[level_number])
+            if pygame.sprite.spritecollide(player, flag_group, False):
+                finish_screen(win=True)
+                player_motion = STOP
+                camera.dx = 0
+                player, flag, level_x, level_y = generate_level(levels[level_number])
         fon = pygame.transform.scale(load_image('fon_level_3_5.png'), (width, height))
         screen.blit(fon, (0, 0))
         all_sprites.draw(screen)
         player_group.draw(screen)
         enemy_group.draw(screen)
         bullet_group.draw(screen)
-        for sprite in platform_group:
-            camera.apply(sprite)
-        for sprite in border_group:
-            camera.apply(sprite)
-        for sprite in enemy_group:
-            camera.apply(sprite)
-        for sprite in bullet_group:
-            camera.apply(sprite)
-        camera.apply(flag)
+        if player:
+            for sprite in platform_group:
+                camera.apply(sprite)
+            for sprite in border_group:
+                camera.apply(sprite)
+            for sprite in enemy_group:
+                camera.apply(sprite)
+            for sprite in bullet_group:
+                camera.apply(sprite)
+            camera.apply(flag)
         all_sprites.update()
         pygame.display.flip()
         clock.tick(FPS)
