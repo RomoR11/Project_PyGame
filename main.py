@@ -17,8 +17,10 @@ player_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 flag_group = pygame.sprite.Group()
 border_group = pygame.sprite.Group()
+bullet_group = pygame.sprite.Group()
 STOP, LEFT, RIGHT, JUMP = 0, 1, 2, 3
 player_motion = STOP
+bullet_flip = False
 
 
 def terminate():
@@ -65,6 +67,10 @@ def start_screen():
                     terminate()
         pygame.display.flip()
         clock.tick(FPS)
+
+
+def change_level_screen():
+    pass
 
 
 def finish_screen():
@@ -119,6 +125,7 @@ def finish_screen():
                 elif return_button.x <= event.pos[0] <= return_button.x + return_button.width and \
                         return_button.y <= event.pos[1] <= return_button.y + return_button.height:
                     start_screen()
+                    return
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -140,7 +147,8 @@ def generate_level(filename):
     new_player, new_flag, max_width, max_height = None, None, 0, 0
     for i in data:
         if i[0] == 'player':
-            new_player = Player(int(i[1]), int(i[2]))
+            rows, columns = i[4].split(':')
+            new_player = Player(int(i[1]), int(i[2]), int(rows), int(columns))
         elif i[0] == 'platform':
             Platform('platform', int(i[1]), int(i[2]), i[3])
         elif i[0] == 'level':
@@ -153,9 +161,11 @@ def generate_level(filename):
     return new_player, new_flag, max_width, max_height
 
 
-platform_image = {'platform': load_image('platform_py.png')}
-player_image = pygame.transform.scale(load_image('hero.png'), (80, 80))
+platform_image = {'platform': load_image('platform_level_1_2_6.png')}
+player_image = load_image('hero.png')
+sneech_image = pygame.transform.scale(load_image('Sneech.png'), (86.4, 45.6))
 flag_image = load_image('finish_flag.png')
+bullet_image = load_image('bullet.png')
 
 
 class Platform(pygame.sprite.Sprite):
@@ -175,7 +185,7 @@ class Flag(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, rows, columns):
         super().__init__(player_group, all_sprites)
         self.image = player_image
         self.x = pos_x
@@ -203,6 +213,9 @@ class Player(pygame.sprite.Sprite):
     def update(self, *args, **kwargs):
         borders_collided = pygame.sprite.spritecollide(self, border_group, False)
         platforms_collided = pygame.sprite.spritecollide(self, platform_group, False)
+        enemies_collided = pygame.sprite.spritecollide(self, enemy_group, False)
+        if enemies_collided:
+            self.die = True
         if not platforms_collided and not borders_collided and not jump or\
                 any(map(lambda x: x.rect.y + 2 < self.y + self.rect.height, platforms_collided)) and not jump and\
                 platforms_collided or any(map(lambda x: x.rect.y + 2 < self.y + self.rect.height, borders_collided))\
@@ -213,11 +226,41 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(self.x, self.y)
 
 
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, flip):
+        super().__init__(bullet_group, all_sprites)
+        self.image = bullet_image
+        self.x = pos_x
+        self.x_max = 339
+        self.x_min = -105
+        self.y = pos_y
+        self.rect = self.image.get_rect().move(self.x, self.y)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.flip = flip
+
+    def update(self, *args, **kwargs):
+        x = args[0] if args else 0
+        enemies_collided = pygame.sprite.spritecollide(self, enemy_group, False)
+        borders_collided = pygame.sprite.spritecollide(self, border_group, False)
+        if enemies_collided or borders_collided:
+            self.kill()
+        if not self.flip:
+            self.x += 5 - x
+            self.x_max -= x
+        elif self.flip:
+            self.image = pygame.transform.flip(self.image, True, False)
+            self.x -= 5 + x
+            self.x_min += x
+        if self.x >= self.x_max or self.x <= self.x_min:
+            self.kill()
+        self.rect = self.image.get_rect().move(self.x, self.y)
+
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos_xL, pos_xR, pos_y, speed):
         super().__init__(enemy_group, all_sprites)
-        self.image = pygame.transform.flip(player_image, True, False)
         self.borders = [int(pos_xL), int(pos_xR)]
+        self.image = sneech_image
         self.x = int(pos_xR)
         self.y = int(pos_y)
         self.speed = int(speed)
@@ -226,6 +269,9 @@ class Enemy(pygame.sprite.Sprite):
         self.move_left = True
 
     def update(self, *args, **kwargs):
+        bullets_collided = pygame.sprite.spritecollide(self, bullet_group, False)
+        if bullets_collided:
+            self.kill()
         x = args[0] if args else 0
         if self.x - self.speed > self.borders[0] and self.move_left:
             self.x -= self.speed + x
@@ -248,12 +294,14 @@ class Camera:
 
     def check_collide(self):
         return lambda x: x.rect.x <= player.x + player.rect.width + self.dx and \
-                         player.x + self.dx <= x.rect.x + x.rect.width
+                         player.x + self.dx <= x.rect.x + x.rect.width and \
+                         player.y <= x.rect.y + 2 < player.y + player.rect.height
 
     def apply(self, obj):
-        if any(map(self.check_collide(), border_group)) and \
-                any(map(lambda x: player.y <= x.rect.y + 2 < player.y + player.rect.height, border_group)):
+        if any(map(self.check_collide(), border_group)):
             return
+        elif obj.__class__.__name__ == 'Bullet':
+            obj.update(self.dx)
         elif obj.__class__.__name__ == 'Enemy':
             obj.update(self.dx)
             if player_motion != STOP:
@@ -295,6 +343,7 @@ player, flag, level_x, level_y = generate_level('level.csv')
 if __name__ == '__main__':
     running = True
     start_screen()
+    change_level_screen()
     camera = Camera()
     camera.update()
     jump = False
@@ -305,10 +354,14 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_f:
+                    Bullet(139 if not bullet_flip else 95, player.y + 21, bullet_flip)
+                elif event.key == pygame.K_LEFT:
+                    bullet_flip = True
                     player_motion = LEFT
                     camera.update(event)
                 elif event.key == pygame.K_RIGHT:
+                    bullet_flip = False
                     player_motion = RIGHT
                     camera.update(event)
                 elif not jump and event.key == pygame.K_UP:
@@ -322,8 +375,10 @@ if __name__ == '__main__':
                     camera.update(event)
         if jump:
             player.y -= jump_count
-            if jump_count > -jump_max:
+            if jump_count > 0:
                 jump_count -= 1
+            elif jump_count == 0:
+                jump = False
             elif pygame.sprite.spritecollideany(player, border_group):
                 jump = False
                 player.y = pygame.sprite.spritecollide(player, border_group, False)[0].rect.y - player.rect.width
@@ -333,16 +388,21 @@ if __name__ == '__main__':
         if player.die:
             finish_screen()
             player_motion = STOP
+            camera.dx = 0
             player, flag, level_x, level_y = generate_level('level.csv')
-        screen.fill('black')
+        fon = pygame.transform.scale(load_image('fon_level_3_5.png'), (width, height))
+        screen.blit(fon, (0, 0))
         all_sprites.draw(screen)
         player_group.draw(screen)
         enemy_group.draw(screen)
+        bullet_group.draw(screen)
         for sprite in platform_group:
             camera.apply(sprite)
         for sprite in border_group:
             camera.apply(sprite)
         for sprite in enemy_group:
+            camera.apply(sprite)
+        for sprite in bullet_group:
             camera.apply(sprite)
         camera.apply(flag)
         all_sprites.update()
