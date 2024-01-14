@@ -1,0 +1,15 @@
+type;coord_x;coord_y;group;enemy_speed
+"level";1280;480;4;None
+"player";100;350;player;2:1
+"platform";-240;459;platform;None
+"platform";0;459;platform;None
+"platform";300;350;border;None
+"platform";240;459;platform;None
+"platform";480;459;platform;None
+"platform";720;459;platform;None
+"platform";960;459;platform;None
+"platform";1200;459;platform;None
+"enemy";100:600;414;enemy;1
+"enemy";100:400;414;enemy;1
+"enemy";100:800;414;enemy;1
+"flag";600;369;None;None
