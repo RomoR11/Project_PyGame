@@ -18,6 +18,7 @@ enemy_group = pygame.sprite.Group()
 flag_group = pygame.sprite.Group()
 border_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
+unused_bullet_group = pygame.sprite.Group()
 STOP, LEFT, RIGHT, JUMP = 0, 1, 2, 3
 player_motion = STOP
 bullet_flip = False
@@ -30,14 +31,8 @@ def terminate():
 
 
 def start_screen():
-    title_text = 'Просто платформер'
-    screen.fill('DarkSeaGreen')
-    font_title = pygame.font.Font('data/SAIBA-45.otf', 35)
-    string_rendered = font_title.render(title_text, 1, pygame.Color('black'))
-    intro_rect = string_rendered.get_rect()
-    intro_rect.top = 30
-    intro_rect.x = 110
-    screen.blit(string_rendered, intro_rect)
+    main_menu_screen = pygame.transform.scale(load_image('main_menu_screen.png'), (width, height))
+    screen.blit(main_menu_screen, (0, 0))
     start_game_button = pygame.draw.rect(screen, 'white', pygame.Rect(210, 200, 200, 80), 3, 10)
     pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(213, 203, 194, 74), 0, 10)
     exit_button = pygame.draw.rect(screen, 'white', pygame.Rect(210, 310, 200, 80), 3, 10)
@@ -314,8 +309,7 @@ def generate_level(filename):
     new_player, new_flag, max_width, max_height = None, None, 0, 0
     for i in data:
         if i[0] == 'player':
-            rows, columns = i[4].split(':')
-            new_player = Player(int(i[1]), int(i[2]), int(rows), int(columns))
+            new_player = Player(int(i[1]), int(i[2]))
         elif i[0] == 'platform':
             if level_number in (1, 2, 6):
                 Platform('platform_1_2_6', int(i[1]), int(i[2]), i[3])
@@ -323,6 +317,8 @@ def generate_level(filename):
                 Platform(f'platform_{level_number}', int(i[1]), int(i[2]), i[3])
         elif i[0] == 'level':
             max_width, max_height = int(i[1]), int(i[2])
+        elif i[0] == 'bullet':
+            UnusedBullet(int(i[1]), int(i[2]))
         elif i[0] == 'flag':
             new_flag = Flag(int(i[1]), int(i[2]))
         elif i[0] == 'enemy':
@@ -342,6 +338,7 @@ player_image = load_image('hero.png')
 sneech_image = pygame.transform.scale(load_image('Sneech.png'), (86.4, 45.6))
 flag_image = load_image('finish_flag.png')
 bullet_image = load_image('bullet.png')
+unused_bullet_image = load_image('bullet.png', (80, 80))
 
 
 class Platform(pygame.sprite.Sprite):
@@ -361,7 +358,7 @@ class Flag(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y, rows, columns):
+    def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
         self.image = player_image
         self.x = pos_x
@@ -371,6 +368,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.flip = False
         self.die = False
+        self.bullets = 3
 
     def twist(self, *args):
         if args:
@@ -393,10 +391,10 @@ class Player(pygame.sprite.Sprite):
         if enemies_collided:
             self.die = True
         if not platforms_collided and not borders_collided and not jump or\
-                any(map(lambda x: x.rect.y + 3 < self.y + self.rect.height, platforms_collided)) and not jump and\
-                platforms_collided or any(map(lambda x: x.rect.y + 3 < self.y + self.rect.height, borders_collided))\
+                any(map(lambda x: x.rect.y + 2 < self.y + self.rect.height, platforms_collided)) and not jump and\
+                platforms_collided or any(map(lambda x: x.rect.y + 2 < self.y + self.rect.height, borders_collided))\
                 and borders_collided and not platforms_collided and not jump:
-            self.y += 3
+            self.y += 2
             if self.y >= screen.get_rect().height:
                 self.die = True
         self.rect = self.image.get_rect().move(self.x, self.y)
@@ -432,6 +430,22 @@ class Bullet(pygame.sprite.Sprite):
         if self.x >= self.x_max or self.x <= self.x_min:
             self.kill()
         self.rect = self.image.get_rect().move(self.x, self.y)
+
+
+class UnusedBullet(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(unused_bullet_group, all_sprites)
+        self.image = unused_bullet_image
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.use = False
+
+    def update(self, *args, **kwargs):
+        player_collided = pygame.sprite.spritecollide(self, player_group, False)
+        if player_collided and not self.use:
+            player.bullets += 1
+            self.kill()
+            self.use = True
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -516,6 +530,14 @@ class Camera:
             player.twist(self.event)
 
 
+font = pygame.font.Font(None, 36)
+
+
+def draw_bullets_count(screen, text, x, y):
+    text_surface = font.render(text, True, (143, 188, 143))
+    screen.blit(text_surface, (x, y))
+
+
 if __name__ == '__main__':
     running = True
     player, flag, level_x, level_y = generate_level(levels[level_number])
@@ -536,8 +558,9 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_f:
+                if event.key == pygame.K_f and player.bullets > 0:
                     Bullet(239 if not bullet_flip else 195, player.y + 21, bullet_flip)
+                    player.bullets -= 1
                 elif event.key == pygame.K_LEFT:
                     bullet_flip = True
                     player_motion = LEFT
@@ -593,7 +616,10 @@ if __name__ == '__main__':
                 camera.apply(sprite)
             for sprite in bullet_group:
                 camera.apply(sprite)
+            for sprite in unused_bullet_group:
+                camera.apply(sprite)
             camera.apply(flag)
+        draw_bullets_count(screen, f"Количество пуль: {player.bullets}", 10, 10)
         all_sprites.update()
         pygame.display.flip()
         clock.tick(FPS)
