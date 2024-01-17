@@ -335,7 +335,6 @@ levels = {1: 'level.csv', 2: 'level_2.csv', 3: 'level_3.csv',
 level_fon = {1: load_image('fon_level_1_6.png'), 2: load_image('fon_level_2.png'), 3: load_image('fon_level_3_5.png'),
              4: load_image('fon_level_4.png'), 5: load_image('fon_level_3_5.png'), 6: load_image('fon_level_1_6.png')}
 player_image = load_image('hero.png')
-jumped_player_image = load_image('dencor-jump.png')
 sneech_image = pygame.transform.scale(load_image('Sneech.png'), (86.4, 45.6))
 flag_image = load_image('finish_flag.png')
 bullet_image = load_image('bullet.png')
@@ -533,6 +532,8 @@ class Camera:
 
 
 font = pygame.font.Font(None, 36)
+
+
 def draw_bullets_count(screen, text, x, y):
     text_surface = font.render(text, True, (143, 188, 143))
     screen.blit(text_surface, (x, y))
