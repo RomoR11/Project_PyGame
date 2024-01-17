@@ -1,5 +1,5 @@
 type;coord_x;coord_y;group;enemy_speed
-"level";3360;480;1;None
+"level";3580;480;1;None
 "player";200;350;player;2:1
 "platform";-240;459;platform;None
 "platform";0;459;platform;None
@@ -23,6 +23,10 @@ type;coord_x;coord_y;group;enemy_speed
 "platform";1840;280;border;None
 "platform";2180;364;border;None
 "platform";2520;280;border;None
+"bullet";855;335;bullet;None
+"bullet";2280;335;bullet;None
+"bullet";2280;425;bullet;None
+"bullet";2635;251;bullet;None
 "enemy";1840:1993;237;enemy;1
 "enemy";2520:2673;237;enemy;1
 "enemy";2180:2333;321;enemy;1
