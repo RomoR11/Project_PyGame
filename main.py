@@ -371,6 +371,11 @@ class Player(pygame.sprite.Sprite):
         self.die = False
         self.bullets = 3
 
+    def jump(self):
+        self.image = jumped_player_image
+        if self.flip:
+            self.image = pygame.transform.flip(self.image, True, False)
+
     def twist(self, *args):
         if args:
             event = args[0]
@@ -573,6 +578,7 @@ if __name__ == '__main__':
                     if pygame.sprite.spritecollideany(player, border_group) or\
                             pygame.sprite.spritecollideany(player, platform_group):
                         jump = True
+                        player.jump()
                         jump_count = jump_max
                 elif event.key == pygame.K_ESCAPE:
                     pause_screen()
@@ -586,11 +592,23 @@ if __name__ == '__main__':
                 jump_count -= 1
             elif jump_count == 0:
                 jump = False
+                if not player.flip:
+                    player.image = player_image
+                elif player.flip:
+                    player.image = pygame.transform.flip(player_image, True, False)
             elif pygame.sprite.spritecollide(player, border_group, False)[0].rect.y > player.y + player.rect.height + 3:
                 jump = False
+                if not player.flip:
+                    player.image = player_image
+                elif player.flip:
+                    player.image = pygame.transform.flip(player_image, True, False)
                 player.y = pygame.sprite.spritecollide(player, border_group, False)[0].rect.y - player.rect.width
             elif pygame.sprite.spritecollideany(player, platform_group):
                 jump = False
+                if not player.flip:
+                    player.image = player_image
+                elif player.flip:
+                    player.image = pygame.transform.flip(player_image, True, False)
                 player.y = pygame.sprite.spritecollide(player, platform_group, False)[0].rect.y - player.rect.width
         if player:
             if player.die:
