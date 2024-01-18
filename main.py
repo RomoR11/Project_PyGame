@@ -23,6 +23,9 @@ STOP, LEFT, RIGHT, JUMP = 0, 1, 2, 3
 player_motion = STOP
 bullet_flip = False
 level_number = 1
+levels_dict = dict()
+for i in open('data/levels.txt', mode='r').read().split('\n'):
+    levels_dict[i.split(':')[0]] = i.split(':')[1]
 
 
 def terminate():
@@ -66,6 +69,13 @@ def start_screen():
         clock.tick(FPS)
 
 
+def get_button_color(level):
+    if levels_dict[level] == 'True':
+        return 'DarkMagenta'
+    else:
+        return 'Black'
+
+
 def change_level_screen():
     global level_number, player_motion, player, flag, level_x, level_y
     title_text = 'Уровни'
@@ -77,17 +87,17 @@ def change_level_screen():
     intro_rect.x = 250
     screen.blit(string_rendered, intro_rect)
     first_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(40, 150, 180, 80), 3, 10)
-    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(43, 153, 174, 74), 0, 10)
+    pygame.draw.rect(screen, get_button_color('level_1'), pygame.Rect(43, 153, 174, 74), 0, 10)
     second_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(240, 150, 180, 80), 3, 10)
-    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(243, 153, 174, 74), 0, 10)
+    pygame.draw.rect(screen, get_button_color('level_2'), pygame.Rect(243, 153, 174, 74), 0, 10)
     third_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(440, 150, 180, 80), 3, 10)
-    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(443, 153, 174, 74), 0, 10)
+    pygame.draw.rect(screen, get_button_color('level_3'), pygame.Rect(443, 153, 174, 74), 0, 10)
     fourth_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(40, 300, 180, 80), 3, 10)
-    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(43, 303, 174, 74), 0, 10)
+    pygame.draw.rect(screen, get_button_color('level_4'), pygame.Rect(43, 303, 174, 74), 0, 10)
     fifth_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(240, 300, 180, 80), 3, 10)
-    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(243, 303, 174, 74), 0, 10)
+    pygame.draw.rect(screen, get_button_color('level_5'), pygame.Rect(243, 303, 174, 74), 0, 10)
     sixth_level_button = pygame.draw.rect(screen, 'white', pygame.Rect(440, 300, 180, 80), 3, 10)
-    pygame.draw.rect(screen, 'DarkMagenta', pygame.Rect(443, 303, 174, 74), 0, 10)
+    pygame.draw.rect(screen, get_button_color('level_6'), pygame.Rect(443, 303, 174, 74), 0, 10)
     font_level = pygame.font.Font(None, 30)
     string_rendered = font_level.render('Первый', 1, pygame.Color('black'))
     intro_rect = string_rendered.get_rect()
@@ -119,6 +129,16 @@ def change_level_screen():
     intro_rect.top = 330
     intro_rect.x = 490
     screen.blit(string_rendered, intro_rect)
+    if levels_dict['level_2'] == 'False':
+        screen.blit(padlock_image, (310, 162))
+    if levels_dict['level_3'] == 'False':
+        screen.blit(padlock_image, (510, 162))
+    if levels_dict['level_4'] == 'False':
+        screen.blit(padlock_image, (110, 312))
+    if levels_dict['level_5'] == 'False':
+        screen.blit(padlock_image, (310, 312))
+    if levels_dict['level_6'] == 'False':
+        screen.blit(padlock_image, (510, 312))
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -133,27 +153,32 @@ def change_level_screen():
                     player, flag, level_x, level_y = generate_level(levels[level_number])
                     return
                 elif second_level_button.x <= event.pos[0] <= second_level_button.x + second_level_button.width and\
-                        second_level_button.y <= event.pos[1] <= second_level_button.y + second_level_button.height:
+                        second_level_button.y <= event.pos[1] <= second_level_button.y + second_level_button.height and\
+                        levels_dict['level_2'] == 'True':
                     level_number = 2
                     player, flag, level_x, level_y = generate_level(levels[level_number])
                     return
                 elif third_level_button.x <= event.pos[0] <= third_level_button.x + third_level_button.width and\
-                        third_level_button.y <= event.pos[1] <= third_level_button.y + third_level_button.height:
+                        third_level_button.y <= event.pos[1] <= third_level_button.y + third_level_button.height and\
+                        levels_dict['level_3'] == 'True':
                     level_number = 3
                     player, flag, level_x, level_y = generate_level(levels[level_number])
                     return
                 elif fourth_level_button.x <= event.pos[0] <= fourth_level_button.x + fourth_level_button.width and\
-                        fourth_level_button.y <= event.pos[1] <= fourth_level_button.y + fourth_level_button.height:
+                        fourth_level_button.y <= event.pos[1] <= fourth_level_button.y + fourth_level_button.height and\
+                        levels_dict['level_4'] == 'True':
                     level_number = 4
                     player, flag, level_x, level_y = generate_level(levels[level_number])
                     return
                 elif fifth_level_button.x <= event.pos[0] <= fifth_level_button.x + fifth_level_button.width and\
-                        fifth_level_button.y <= event.pos[1] <= fifth_level_button.y + fifth_level_button.height:
+                        fifth_level_button.y <= event.pos[1] <= fifth_level_button.y + fifth_level_button.height and\
+                        levels_dict['level_5'] == 'True':
                     level_number = 5
                     player, flag, level_x, level_y = generate_level(levels[level_number])
                     return
                 elif sixth_level_button.x <= event.pos[0] <= sixth_level_button.x + sixth_level_button.width and\
-                        sixth_level_button.y <= event.pos[1] <= sixth_level_button.y + sixth_level_button.height:
+                        sixth_level_button.y <= event.pos[1] <= sixth_level_button.y + sixth_level_button.height and\
+                        levels_dict['level_6'] == 'True':
                     level_number = 6
                     player, flag, level_x, level_y = generate_level(levels[level_number])
                     return
@@ -259,6 +284,9 @@ def finish_screen(win=False):
     player_group.empty()
     enemy_group.empty()
     platform_group.empty()
+    if win and level_number < 6:
+        levels_dict[f'level_{level_number + 1}'] = 'True'
+        update_levels(levels_dict)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -311,7 +339,9 @@ def generate_level(filename):
         if i[0] == 'player':
             new_player = Player(int(i[1]), int(i[2]))
         elif i[0] == 'platform':
-            if level_number in (1, 2, 6):
+            if i[3] == 'border':
+                Platform('border', int(i[1]), int(i[2]), i[3])
+            elif level_number in (1, 2, 6):
                 Platform('platform_1_2_6', int(i[1]), int(i[2]), i[3])
             else:
                 Platform(f'platform_{level_number}', int(i[1]), int(i[2]), i[3])
@@ -327,9 +357,20 @@ def generate_level(filename):
     return new_player, new_flag, max_width, max_height
 
 
+def update_levels(dict_levels):
+    file = open('data/levels.txt', mode='w')
+    column = 0
+    file.seek(column)
+    file.close()
+    file_new = open('data/levels.txt', mode='w')
+    for key, value in dict_levels.items():
+        file_new.write(f'{key}:{value}' + '\n')
+    file_new.close()
+
+
 platform_image = {'platform_1_2_6': load_image('platform_level_1_2_6.png'),
                   'platform_3': load_image('platform_level_3.png'), 'platform_4': load_image('platform_level_4.png'),
-                  'platform_5': load_image('platform_level_5.png')}
+                  'platform_5': load_image('platform_level_5.png'), 'border': load_image('border.png')}
 levels = {1: 'level.csv', 2: 'level_2.csv', 3: 'level_3.csv',
           4: 'level_4.csv', 5: 'level_5.csv', 6: 'level_6.csv'}
 level_fon = {1: load_image('fon_level_1_6.png'), 2: load_image('fon_level_2.png'), 3: load_image('fon_level_3_5.png'),
@@ -340,6 +381,7 @@ flag_image = load_image('finish_flag.png')
 bullet_image = load_image('bullet.png')
 unused_bullet_image = load_image('bullet.png', (80, 80))
 jumped_player_image = load_image('dencor-jump.png')
+padlock_image = load_image('padlock.png')
 
 
 class Platform(pygame.sprite.Sprite):
@@ -397,10 +439,10 @@ class Player(pygame.sprite.Sprite):
         if enemies_collided:
             self.die = True
         if not platforms_collided and not borders_collided and not jump or\
-                any(map(lambda x: x.rect.y + 2 < self.y + self.rect.height, platforms_collided)) and not jump and\
-                platforms_collided or any(map(lambda x: x.rect.y + 2 < self.y + self.rect.height, borders_collided))\
+                any(map(lambda x: x.rect.y + 3 < self.y + self.rect.height, platforms_collided)) and not jump and\
+                platforms_collided or any(map(lambda x: x.rect.y + 3 < self.y + self.rect.height, borders_collided))\
                 and borders_collided and not platforms_collided and not jump:
-            self.y += 2
+            self.y += 3
             if self.y >= screen.get_rect().height:
                 self.die = True
         self.rect = self.image.get_rect().move(self.x, self.y)
@@ -424,7 +466,7 @@ class Bullet(pygame.sprite.Sprite):
         x = args[0] if args else 0
         enemies_collided = pygame.sprite.spritecollide(self, enemy_group, False)
         borders_collided = pygame.sprite.spritecollide(self, border_group, False)
-        if enemies_collided or borders_collided:
+        if borders_collided:
             self.kill()
         if not self.flip:
             self.x += 5 - x
