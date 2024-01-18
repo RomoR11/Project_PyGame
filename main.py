@@ -358,13 +358,13 @@ def generate_level(filename):
     return new_player, new_flag, max_width, max_height
 
 
-def update_levels(lvls):
+def update_levels(dict_levels):
     file = open('data/levels.txt', mode='w')
     column = 0
     file.seek(column)
     file.close()
     file_new = open('data/levels.txt', mode='w')
-    for key, value in lvls.items():
+    for key, value in dict_levels.items():
         file_new.write(f'{key}:{value}' + '\n')
     file_new.close()
 
