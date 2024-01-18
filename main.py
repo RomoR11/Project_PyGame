@@ -339,6 +339,7 @@ sneech_image = pygame.transform.scale(load_image('Sneech.png'), (86.4, 45.6))
 flag_image = load_image('finish_flag.png')
 bullet_image = load_image('bullet.png')
 unused_bullet_image = load_image('bullet.png', (80, 80))
+jumped_player_image = load_image('dencor-jump.png')
 
 
 class Platform(pygame.sprite.Sprite):
